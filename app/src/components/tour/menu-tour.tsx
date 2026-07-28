@@ -243,6 +243,11 @@ function MenuBuffet({ platos, addOn }: { platos: PlatoBuffet[]; addOn?: { nombre
 // visual que MenuBuffet (lista con check + card de add-on) pero con los
 // 7 platos en grid de 2 columnas en vez de lista vertical — son 7 ítems,
 // la lista vertical se alarga demasiado.
+// [v2 2026-07-28] Las notas de cocina (condimentos · parrilla en la cocina
+// flotante · restricciones dietéticas sin contaminación cruzada) estuvieron
+// aquí unas horas y se MUDARON a «Antes de reservar» (antes-de-reservar.tsx),
+// donde el slide 2 del cliente vive entero y en un solo bloque. Aquí quedaba
+// bien de contenido pero repartía la corrección en cuatro sitios de la página.
 function MenuCharter({
   platos,
   addOn,

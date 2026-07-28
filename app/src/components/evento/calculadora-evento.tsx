@@ -45,7 +45,13 @@ export function CalculadoraEvento({ paquetes }: { paquetes: PaqueteEvento[] }) {
   const extras = Math.max(0, personas - incluidas)
 
   return (
-    <div className="flex flex-col gap-4 rounded-card-grande bg-papel p-4 ring-1 ring-linea sm:p-5">
+    // `widget-marco` (sombra INSET de 1px) y no `ring-1 ring-linea`, por el
+    // mismo motivo que ya documenta widget-reserva.tsx: el ring de Tailwind se
+    // pinta POR FUERA del borde, así que el contenedor de scroll de la columna
+    // (lg:overflow-y-auto en pages/evento.tsx) lo recortaba a izquierda y
+    // derecha — el borde se veía a trozos. Una sombra inset se dibuja DENTRO
+    // de la caja y no hay overflow que pueda comérsela.
+    <div className="flex flex-col gap-4 rounded-card-grande bg-papel p-4 widget-marco sm:p-5">
       <div>
         <p className="font-display text-lg font-semibold text-navy">Reserva online</p>
         <p className="mt-0.5 text-sm text-navy-sub">

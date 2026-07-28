@@ -24,18 +24,62 @@ import { WHATSAPP_URL, type FichaEvento } from '@/data/eventos'
 // el widget de tour (Slots ya tematizados en styles/alignui.css). Mismo
 // padding ajustado (Samuel: "reduce el padding" — la v3 del widget de
 // tour bajó a p-4 sm:p-5, mismo aquí).
+//
+// ── EL FORMULARIO NO COMPITE CON LA COMPRA (2026-07-28) ─────────────────
+// Desde que la columna lleva la reserva online arriba (calculadora-evento.tsx),
+// el formulario de cotización debajo era un segundo camino, siempre desplegado,
+// con sus 7 campos a la vista. Samuel lo detectó y propuso un TOGGLE arriba de
+// la columna, por defecto en «Reserva online».
+//
+// Se hace distinto —divulgación progresiva en vez de toggle— y conviene decir
+// por qué, porque el objetivo es el mismo:
+//   · Un toggle de 2 posiciones OBLIGA a elegir antes de saber qué hay detrás
+//     de cada una, y en el sitio más caro de la página. Es el gesto correcto
+//     cuando las dos opciones son igual de probables (Light/Premium del widget
+//     de tour), y aquí no lo son: la inmensa mayoría de quien llega a party
+//     boat cabe en un paquete de precio cerrado.
+//   · Dos pestañas del mismo tamaño dicen «esto son dos caminos iguales». La
+//     página entonces empata comprar con pedir presupuesto, que es exactamente
+//     lo que Samuel quiere evitar («que no distraiga al usuario de la compra»).
+//   · Con el toggle, el formulario sigue existiendo entero al otro lado: la
+//     columna no se acorta y el visitante que solo quiere reservar sigue
+//     teniendo un botón que le lleva a rellenar campos.
+// Así que el formulario se PLIEGA detrás de una sola línea que nombra su caso
+// de uso («tu evento no encaja en un paquete»). Quien no se ve en esa frase no
+// se distrae; quien sí, la reconoce y abre. Cuesta un clic más, pero solo a
+// quien de todas formas iba a rellenar 7 campos.
+//
+// Se sigue cumpliendo el orden que pidió el cliente en los slides 14-15
+// («reserva online y DEBAJO el formulario»): sigue debajo, y sin toggle que
+// esconda la reserva online.
+//
+// ⚠️ REVERTIR ES BARATO si Samuel prefiere su toggle: el estado ya vive aquí
+// (`abierto`) — sería levantarlo a pages/evento.tsx y pintar dos pestañas
+// arriba de la columna.
 
-type Props = { evento: FichaEvento }
+type Props = {
+  evento: FichaEvento
+  /** [v2 2026-07-28] El formulario arranca PLEGADO, detrás de una línea de
+   *  invitación. Lo activa pages/evento.tsx solo cuando la columna tiene
+   *  arriba la reserva online (hoy: party boat). Sin calculadora —bodas,
+   *  empresas— el formulario ES el widget y se pinta abierto, como siempre. */
+  colapsable?: boolean
+}
 
 const MAX_PERSONAS = 200 // tope: la web del cliente lo tiene en min=1, max=120
 const MIN_PERSONAS = 1
 
 function Caja({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      id="evento-widget"
-      className="flex scroll-mt-sticky-top flex-col gap-4 rounded-card-grande bg-papel p-4 ring-1 ring-linea sm:p-5"
-    >
+    // `widget-marco` (sombra INSET de 1px) en vez de `ring-1 ring-linea`: el
+    // ring se pinta POR FUERA del borde y el contenedor de scroll de la
+    // columna (lg:overflow-y-auto en pages/evento.tsx) lo recortaba a los
+    // lados — el borde se veía a trozos. Mismo diagnóstico y misma cura que
+    // en el widget de la ficha de tour (ver componentes.css §widget-marco).
+    // El ancla #evento-widget YA NO vive aquí: se muda a la columna entera en
+    // pages/evento.tsx, para que el «Reservar» del header caiga en la reserva
+    // online (que es lo primero de la columna) y no en el formulario.
+    <div className="flex flex-col gap-4 rounded-card-grande bg-papel p-4 widget-marco sm:p-5">
       {children}
     </div>
   )
@@ -188,8 +232,12 @@ function StepperPersonas({
   )
 }
 
-export function WidgetEvento({ evento }: Props) {
+export function WidgetEvento({ evento, colapsable = false }: Props) {
   const navigate = useNavigate()
+  // [v2 2026-07-28] Ver el comentario largo de arriba (§EL FORMULARIO NO
+  // COMPITE CON LA COMPRA). `abierto` arranca en true salvo que la página
+  // pida plegarlo.
+  const [abierto, setAbierto] = useState(!colapsable)
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
@@ -206,6 +254,9 @@ export function WidgetEvento({ evento }: Props) {
   // de Figma + verificar la validación visual.
   useDevFlag('dev-widget-evento', (v) => {
     if (v === 'lleno') {
+      // Un form lleno pero plegado no se ve: el frame de Figma lo necesita
+      // abierto, aunque la landing lo pliegue por defecto.
+      setAbierto(true)
       setNombre('Ana Pérez')
       setEmail('ana@email.com')
       setWhatsapp('+1 829 000 0000')
@@ -214,6 +265,13 @@ export function WidgetEvento({ evento }: Props) {
       setPersonas(40)
       setMensaje('Quisiera cotizar para un cumpleaños con cena y barra libre.')
     }
+  })
+
+  // [dev-mode] ?dev-cotizacion-evento=plegada|abierta — los dos frames del
+  // formulario plegable en la landing que sí lo pliega (party boat).
+  useDevFlag('dev-cotizacion-evento', (v) => {
+    if (v === 'plegada') setAbierto(false)
+    if (v === 'abierta') setAbierto(true)
   })
 
   function handleSubmit(e: FormEvent) {
@@ -237,6 +295,34 @@ export function WidgetEvento({ evento }: Props) {
     navigate(`/eventos/${evento.slug}/gracias?reserva=${cotizacion.codigo}`, { replace: true })
   }
 
+  // ESTADO PLEGADO: una línea que nombra el caso de uso + un botón discreto.
+  // El botón es `basic` (neutro) a propósito: el coral de esta columna es del
+  // CTA de reserva, y dos botones coral seguidos serían dos «acción
+  // principal».
+  if (!abierto) {
+    return (
+      <Caja>
+        <p className="font-display text-base font-semibold text-navy">
+          ¿Tu evento no encaja en un paquete?
+        </p>
+        <p className="-mt-2 text-sm text-navy-sub">
+          Bodas, grupos grandes o menú a medida: te lo cotizamos gratis y sin compromiso, con
+          respuesta en menos de 24 h.
+        </p>
+        <FancyButton.Root
+          type="button"
+          variant="basic"
+          className="w-full"
+          onClick={() => setAbierto(true)}
+          aria-expanded={false}
+          aria-controls="evento-form"
+        >
+          {evento.ctaPrincipal}
+        </FancyButton.Root>
+      </Caja>
+    )
+  }
+
   // Mismo banner "Ahorra 5% en efectivo" que el widget de tour — es
   // confianza, no precio, y aplica también a eventos: reservar por
   // WhatsApp directo (no por OTA) tiene el mismo descuento.
@@ -246,7 +332,7 @@ export function WidgetEvento({ evento }: Props) {
         {evento.ctaPrincipal}
       </h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate={false}>
+      <form id="evento-form" onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate={false}>
         <Campo
           id="evento-nombre"
           label="Nombre"

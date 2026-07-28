@@ -23,6 +23,9 @@ import { TituloSeccion } from '@/components/tour/titulo-seccion'
 export function TablaPreciosCharter({ ficha, activa }: { ficha: FichaTour; activa: string | null }) {
   if (!ficha.subVariantes || ficha.subVariantes.length === 0) return null
 
+  // [v2 2026-07-28] La línea «Cruceros privados de 3 o 4 horas» estuvo aquí
+  // unas horas y se MUDÓ a «Antes de reservar» (antes-de-reservar.tsx), donde
+  // el slide 2 del cliente vive entero y en un solo bloque.
   return (
     <section id="ancla-precios" className={`${BLOQUE_FICHA} scroll-mt-sticky-top`}>
       <TituloSeccion>Tabla de precios por barco</TituloSeccion>

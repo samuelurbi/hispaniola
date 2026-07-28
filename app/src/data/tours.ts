@@ -95,6 +95,14 @@ export type MenuBuffetTour = {
 export type MenuCharterTour = {
   platos: { nombre: string; desc?: string }[]
   addOn?: { nombre: string; precio: number; descripcion?: string }
+  /** [v2 2026-07-28, plan 01 §7 — slide 2] Cómo se cocina a bordo, portado de
+   *  la ficha real del charter («falta eso en charter privado»). Es la única
+   *  de las 4 piezas del slide que no estaba en ninguna parte del sitio nuevo,
+   *  y contiene el diferencial más fuerte que nadie más publica: la comida se
+   *  asa POR SEPARADO para evitar la contaminación cruzada.
+   *  `id` en vez de icono: este archivo no importa React ni lucide — el icono
+   *  se mapea en menu-tour.tsx (presentación, no contenido). */
+  cocina?: { id: string; titulo: string; texto: string }[]
 }
 
 export type FichaTour = {
@@ -465,7 +473,12 @@ export const FICHAS: Record<string, FichaTour> = {
   'charter-privado': {
     tituloLargo: 'Charter Privado — el barco entero para tu grupo',
     audiencia: 'Tu grupo',
-    duracion: '3-4 horas',
+    // [v2 2026-07-28, plan 01 §7 — slide 2] «3-4 horas» → «3 o 4 horas». La
+    // banda que el cliente señaló dice «Cruceros privados de 3 y 4 horas», y
+    // es un hecho distinto del que se estaba publicando: un guion se lee como
+    // «entre 3 y 4, según el día» (una imprecisión), cuando la realidad es que
+    // se ELIGE — GrandMa 3 h, Maite y Santa Maria 4 h, Forever Teresa las dos.
+    duracion: '3 o 4 horas',
     descripcionLarga: [
       'El Charter Privado es el barco entero para tu grupo — familia, amigos, empresa o celebración. Eliges uno de nuestros 4 botes según el tamaño del grupo y el plan: Maite (4h, hasta 20 pax), GrandMa (3h, hasta 20 pax), Santa Maria (4h, hasta 20 pax, o más con skewers) o Forever Teresa (3h o 4h, hasta 120 pax).',
       'La ruta es la misma que los otros tours: navegación desde Bávaro hasta Cabeza de Toro, snorkel en el vivero de coral del proyecto top-3 de RD, parada en la playa desierta con coco-loco y comida a bordo de la cocina flotante. Lo que cambia es el barco (capacidad y tarifa según pax) y el menú, que coordinamos contigo: 7 platos a elegir (seafood, meat, surf & turf, vegetarian, chicken/beef/shrimp skewers) y langosta premium como add-on opcional al check-out.',
@@ -618,6 +631,29 @@ export const FICHAS: Record<string, FichaTour> = {
         precio: 30,
         descripcion: 'Disponible al hacer check-out, US$ 30 por persona',
       },
+      // [v2 2026-07-28, plan 01 §7 — slide 2] Los tres hechos de cocina de la
+      // ficha original del charter. Se traducen a tuteo (la web original usa
+      // «usted»: «lo que le permite visitarla»), pero NO se adorna nada — cada
+      // frase corresponde a una afirmación que el cliente ya publica.
+      cocina: [
+        {
+          id: 'condimentos',
+          titulo: 'Condimentos hechos desde cero',
+          texto: 'Seleccionados a mano y elaborados por nosotros, no mezclas de bote.',
+        },
+        {
+          id: 'parrilla',
+          titulo: 'A la parrilla, en la cocina flotante',
+          texto:
+            'Tu plato se asa a bordo mientras navegas — y puedes acercarte a la cocina a verlo.',
+        },
+        {
+          id: 'dietas',
+          titulo: 'Restricciones dietéticas, sin contaminación cruzada',
+          texto:
+            'Nos adaptamos a cualquier restricción y esos platos se asan por separado del resto.',
+        },
+      ],
     },
     galeriaCompleta: [
       'galeria-charter-privado-1',

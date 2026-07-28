@@ -12,7 +12,7 @@ import { useDevFlag } from '@/dev/use-dev-flag'
 import { hoyISO, sumarDias } from '@/lib/fechas'
 import { formatoDinero, QUOTES, type Tour } from '@/data/home'
 import { WHATSAPP_URL, calcularTotalTour, type FichaTour } from '@/data/tours'
-import { ALBUM_UPSELL, totalAddOns, saltoDeTramo } from '@/lib/tarifas'
+import { ALBUM_UPSELL, DESCUENTO_MAXIMO, totalAddOns, saltoDeTramo } from '@/lib/tarifas'
 import { AddOnsWidget } from '@/components/tour/add-ons-widget'
 import { PistaInfo } from '@/components/ui/pista-info'
 import { PasajerosPopover, FilaPasajero } from '@/components/tour/pasajeros-popover'
@@ -1089,10 +1089,16 @@ export function WidgetReserva({
       {/* «Ahorra hasta 15%» (decisión de precio, Fase B): el precio mostrado es
           el de LISTA (el que todos pagan); los descuentos —recurrente +
           anticipación + efectivo— se comunican aquí, junto al CTA, sin anclar
-          el precio en ellos. */}
+          el precio en ellos.
+          [v2 2026-07-28] El número deja de estar escrito a mano y sale de
+          DESCUENTO_MAXIMO, el mismo array que pinta el bloque «Cómo pagar
+          menos» y que aplica el descuento al cobrar. Este chip lleva desde la
+          Fase B prometiendo un 15% que ninguna otra parte del sitio explicaba;
+          ahora que la explicación existe, lo peligroso sería que las dos
+          cifras pudieran separarse. */}
       <div className="flex items-center justify-center gap-1.5 rounded-btn bg-menta px-3 py-1.5 text-center text-xs font-medium text-menta-texto">
         <Tag className="size-3.5 shrink-0" aria-hidden="true" />
-        Reservando directo ahorras hasta 15%
+        Reservando directo ahorras hasta {DESCUENTO_MAXIMO}%
       </div>
 
       {/* Sin fecha, el CTA está DESHABILITADO de verdad (no un botón gris que

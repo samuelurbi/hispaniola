@@ -95,7 +95,10 @@ export const TOURS: Tour[] = [
     slug: 'charter-privado',
     nombre: 'Charter Privado',
     audienciaChip: 'Grupo privado',
-    duracionCorta: '3-4 h',
+    // [v2 2026-07-28, plan 01 §7 — slide 2] «3-4 h» → «3 o 4 h», por el mismo
+    // motivo que `duracion` en data/tours.ts: la duración se elige con el
+    // barco, no es un rango aproximado.
+    duracionCorta: '3 o 4 h',
     rating: 4.9,
     resenas: 1782,
     maxPax: 120,
