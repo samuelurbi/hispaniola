@@ -67,12 +67,19 @@ export function SelloTripAdvisor({ className = '' }: { className?: string }) {
         className="size-18 shrink-0 sm:size-20"
       >
         <defs>
-          {/* 18 dientes entre r=36 y r=48 (Samuel, 2026-07-28: «quítale picos,
-              quítale el 50%, son demasiados» — eran 36). El radio interior queda
-              POR DENTRO del disco (r=38) a propósito: así los valles no se ven y
-              los picos parecen brotar del borde dorado en vez de estar pegados
-              detrás. */}
-          <path id={idPicos} d="M50.00 2.00L56.25 14.55L66.42 4.89L68.00 18.82L80.85 13.23L77.58 26.86L91.57 26.00L83.83 37.69L97.27 41.66L86.00 50.00L97.27 58.34L83.83 62.31L91.57 74.00L77.58 73.14L80.85 86.77L68.00 81.18L66.42 95.11L56.25 85.45L50.00 98.00L43.75 85.45L33.58 95.11L32.00 81.18L19.15 86.77L22.42 73.14L8.43 74.00L16.17 62.31L2.73 58.34L14.00 50.00L2.73 41.66L16.17 37.69L8.43 26.00L22.42 26.86L19.15 13.23L32.00 18.82L33.58 4.89L43.75 14.55Z" />
+          {/* 22 dientes entre r=36 y r=45,5. Historia de la geometría, que se ha
+              afinado en tres pasadas con Samuel el 2026-07-28: 36 dientes →
+              «quítale picos, quítale el 50%, son demasiados» (18) → «ponle un
+              20% más de picos y no tan altos, reducidos en un 25%» (22, y el
+              pico asoma 7,5 sobre el disco en vez de 10).
+              OJO CON EL 25%: se aplica a lo que SE VE asomar (r=38→48, o sea 10
+              unidades), no a la altura bruta del diente (r=36→48, 12). El radio
+              interior está metido POR DENTRO del disco a propósito —así los
+              valles no se ven y los picos parecen brotar del borde dorado en vez
+              de estar pegados detrás— y por eso 2 de esas 12 unidades nunca
+              llegan a verse. Reducir la cifra bruta habría dado un recorte del
+              30% de lo visible en lugar del 25% pedido. */}
+          <path id={idPicos} d="M50.00 4.50L55.12 14.37L62.82 6.34L64.95 17.25L74.60 11.72L73.57 22.79L84.39 20.20L80.29 30.54L91.39 31.10L84.54 39.86L95.04 43.52L86.00 50.00L95.04 56.48L84.54 60.14L91.39 68.90L80.29 69.46L84.39 79.80L73.57 77.21L74.60 88.28L64.95 82.75L62.82 93.66L55.12 85.63L50.00 95.50L44.88 85.63L37.18 93.66L35.05 82.75L25.40 88.28L26.43 77.21L15.61 79.80L19.71 69.46L8.61 68.90L15.46 60.14L4.96 56.48L14.00 50.00L4.96 43.52L15.46 39.86L8.61 31.10L19.71 30.54L15.61 20.20L26.43 22.79L25.40 11.72L35.05 17.25L37.18 6.34L44.88 14.37Z" />
           <clipPath id={idDisco}>
             <circle cx="50" cy="50" r="38" />
           </clipPath>
