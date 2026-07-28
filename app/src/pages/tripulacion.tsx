@@ -1,11 +1,9 @@
-import { useRef } from 'react'
 import { Footer } from '@/components/home/footer'
-import { IntroNosotros } from '@/components/nosotros/intro-nosotros'
-import { useAperturaIntro } from '@/components/nosotros/use-apertura-intro'
 import { HeroInterna } from '@/components/internas/hero-interna'
+import { FranjaEquipo } from '@/components/equipo/franja-equipo'
 import { GridEquipo } from '@/components/equipo/grid-equipo'
 import { Meta } from '@/components/seo/meta'
-import { EQUIPO_PAGINA, TOTAL_EQUIPO, DEPARTAMENTOS } from '@/data/equipo'
+import { EQUIPO_PAGINA } from '@/data/equipo'
 
 // Página Tripulación / Equipo (/tripulacion) — correcciones v2, plan 05.
 //
@@ -15,13 +13,30 @@ import { EQUIPO_PAGINA, TOTAL_EQUIPO, DEPARTAMENTOS } from '@/data/equipo'
 // personas detrás de cada tour», que es más honesto que «tripulación» y es lo
 // que su propia maqueta titulaba.
 //
+// [v2 2026-07-28, pedido de Samuel] LA PÁGINA SE ALINEA CON EL PDF (slides
+// 36-43), que es MÁS DIRECTA que la versión anterior. Cuatro tiempos y nada
+// más:
+//   1. Hero: badge + título + descripción. Y SOLO eso — los 3 KPIs que vivían
+//      dentro se bajan a la franja.
+//   2. FranjaEquipo: la info compacta (cuántas personas, cuántos
+//      departamentos, desde cuándo, y que el equipo es de RD + España).
+//   3. Filtros por departamento + todo el equipo (GridEquipo).
+//   4. Cierre «¿Quieres remar con nosotros?» (dentro de GridEquipo).
+//
+// SALE «Bienvenido a la familia Hispaniola» (nosotros/intro-nosotros.tsx). Se
+// había reubicado aquí el 07-27 al desaparecer /nosotros, como colocación
+// PROVISIONAL a la espera de que Samuel confirmara el reparto — ya lo hizo: en
+// el PDF no existe, y metía una bienvenida de marca de dos párrafos + foto
+// apaisada entre el titular y la gente, que es justo lo que hacía la página
+// menos directa. ⚠️ El bloque NO se borra: sigue en components/nosotros/ con
+// su contenido real portado de about-hispaniola.php, hoy SIN COLOCAR. Si al
+// final no aterriza en ninguna página, ese contenido se pierde con /nosotros —
+// conviene decidirlo, no dejarlo caducar en silencio.
+//
 // ⚠️ PÁGINA DE MOLDE: los nombres, retratos y frases son placeholders. Ver la
 // cabecera de data/equipo.ts. El aviso también se pinta EN PANTALLA (GridEquipo)
 // mientras dure — no basta con un comentario en el código.
 export function TripulacionPage() {
-  const contenidoRef = useRef<HTMLDivElement>(null)
-  useAperturaIntro(contenidoRef, { activo: true })
-
   return (
     <div>
       <Meta
@@ -38,34 +53,15 @@ export function TripulacionPage() {
             {EQUIPO_PAGINA.titulo}
           </h1>
           <p className="mt-4 text-lg text-white/85">{EQUIPO_PAGINA.lead}</p>
-          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
-            <div>
-              <p className="font-display text-2xl font-semibold text-white">{TOTAL_EQUIPO}</p>
-              <p className="text-sm text-white/70">personas en el equipo</p>
-            </div>
-            <div>
-              <p className="font-display text-2xl font-semibold text-white">
-                {DEPARTAMENTOS.length}
-              </p>
-              <p className="text-sm text-white/70">departamentos</p>
-            </div>
-            <div>
-              <p className="font-display text-2xl font-semibold text-white">2012</p>
-              <p className="text-sm text-white/70">creciendo juntos</p>
-            </div>
-          </div>
         </div>
       </HeroInterna>
 
-      <div ref={contenidoRef} className="mx-auto max-w-contenido px-5 py-12 sm:px-10 lg:py-16">
-        <div className="flex flex-col gap-16 lg:gap-24">
-          {/* [v2 2026-07-27] «Quiénes somos» se REUBICA aquí desde /nosotros,
-              que desaparece. Es la bienvenida de marca («la familia
-              Hispaniola») y encaja con la página de personas mejor que con
-              Flota o Instalaciones. Sin esto se habría perdido con la página.
-              ⚠️ Colocación provisional, como la de «Nuestra historia» en
-              /flota — pendiente de que Samuel confirme el reparto. */}
-          <IntroNosotros />
+      <div className="mx-auto max-w-contenido px-5 py-12 sm:px-10 lg:py-16">
+        {/* La franja pega arriba, contra el hero, y el equipo empieza justo
+            después: el orden del PDF es hero → datos → filtros → gente, sin
+            respiros de por medio. */}
+        <div className="flex flex-col gap-10 lg:gap-12">
+          <FranjaEquipo />
           <GridEquipo />
         </div>
       </div>

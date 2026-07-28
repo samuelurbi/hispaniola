@@ -67,10 +67,12 @@ export function SelloTripAdvisor({ className = '' }: { className?: string }) {
         className="size-18 shrink-0 sm:size-20"
       >
         <defs>
-          {/* 36 dientes entre r=36 y r=48. El radio interior queda POR DENTRO
-              del disco (r=38) a propósito: así los valles no se ven y los picos
-              parecen brotar del borde dorado en vez de estar pegados detrás. */}
-          <path id={idPicos} d="M50.00 2.00L53.14 14.14L58.34 2.73L59.32 15.23L66.42 4.89L65.21 17.37L74.00 8.43L70.65 20.51L80.85 13.23L75.46 24.54L86.77 19.15L79.49 29.35L91.57 26.00L82.63 34.79L95.11 33.58L84.77 40.68L97.27 41.66L85.86 46.86L98.00 50.00L85.86 53.14L97.27 58.34L84.77 59.32L95.11 66.42L82.63 65.21L91.57 74.00L79.49 70.65L86.77 80.85L75.46 75.46L80.85 86.77L70.65 79.49L74.00 91.57L65.21 82.63L66.42 95.11L59.32 84.77L58.34 97.27L53.14 85.86L50.00 98.00L46.86 85.86L41.66 97.27L40.68 84.77L33.58 95.11L34.79 82.63L26.00 91.57L29.35 79.49L19.15 86.77L24.54 75.46L13.23 80.85L20.51 70.65L8.43 74.00L17.37 65.21L4.89 66.42L15.23 59.32L2.73 58.34L14.14 53.14L2.00 50.00L14.14 46.86L2.73 41.66L15.23 40.68L4.89 33.58L17.37 34.79L8.43 26.00L20.51 29.35L13.23 19.15L24.54 24.54L19.15 13.23L29.35 20.51L26.00 8.43L34.79 17.37L33.58 4.89L40.68 15.23L41.66 2.73L46.86 14.14Z" />
+          {/* 18 dientes entre r=36 y r=48 (Samuel, 2026-07-28: «quítale picos,
+              quítale el 50%, son demasiados» — eran 36). El radio interior queda
+              POR DENTRO del disco (r=38) a propósito: así los valles no se ven y
+              los picos parecen brotar del borde dorado en vez de estar pegados
+              detrás. */}
+          <path id={idPicos} d="M50.00 2.00L56.25 14.55L66.42 4.89L68.00 18.82L80.85 13.23L77.58 26.86L91.57 26.00L83.83 37.69L97.27 41.66L86.00 50.00L97.27 58.34L83.83 62.31L91.57 74.00L77.58 73.14L80.85 86.77L68.00 81.18L66.42 95.11L56.25 85.45L50.00 98.00L43.75 85.45L33.58 95.11L32.00 81.18L19.15 86.77L22.42 73.14L8.43 74.00L16.17 62.31L2.73 58.34L14.00 50.00L2.73 41.66L16.17 37.69L8.43 26.00L22.42 26.86L19.15 13.23L32.00 18.82L33.58 4.89L43.75 14.55Z" />
           <clipPath id={idDisco}>
             <circle cx="50" cy="50" r="38" />
           </clipPath>

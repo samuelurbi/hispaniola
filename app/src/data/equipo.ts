@@ -171,12 +171,30 @@ export function contarPorDepartamento(id: DepartamentoId): number {
 export const EQUIPO_PAGINA = {
   eyebrow: 'Nuestro equipo',
   titulo: 'Las personas detrás de cada tour',
-  // ⚠️ El lead de la maqueta del cliente decía «Gerencia española afincada en
-  // Punta Cana desde 2012». Eso NO está en ninguna parte de la web original ni
-  // se confirmó en la reunión — es una afirmación sobre la empresa, así que no
-  // se publica hasta que el cliente la confirme. Este lead dice solo lo que sí
-  // sabemos.
+  // El lead de la maqueta del cliente decía «Gerencia española afincada en
+  // Punta Cana desde 2012 y un gran equipo dominicano que vive el mar
+  // contigo». El dato RD + España SÍ se publica ahora (ver `datos`, pedido de
+  // Samuel 2026-07-28), pero como dato de la franja, no como frase del hero:
+  // aquí sigue el lead que dice solo lo que describe la página.
   lead: 'Un equipo repartido en seis departamentos que hacen posible tu día perfecto: desde quien te responde cuando escribes hasta quien cocina frente a ti en el mar.',
+  // Franja compacta bajo el hero (slide 37 del PDF v2 — los cuatro datos y su
+  // redacción son del cliente). Los dos primeros valores se DERIVAN del array,
+  // como todos los contadores de esta página; los dos últimos son texto fijo.
+  //
+  // El «≈» del total NO es adorno: el cliente dijo «cerca de 70» de viva voz y
+  // su maqueta listaba 37. Mientras la plantilla real no llegue, el número es
+  // una aproximación y se enseña como tal.
+  datos: [
+    { id: 'personas', valor: `≈ ${TOTAL_EQUIPO}`, etiqueta: 'personas en el equipo' },
+    { id: 'departamentos', valor: `${DEPARTAMENTOS.length} departamentos`, etiqueta: 'de oficina al mar' },
+    { id: 'desde', valor: 'Desde 2012', etiqueta: 'creciendo juntos' },
+    // ⚠️ Este es el único dato de la franja que afirma algo sobre la EMPRESA y
+    // no sobre esta página. No estaba en la web original — sale de la maqueta
+    // del cliente (slide 37) y se publica por pedido explícito de Samuel
+    // (2026-07-28: «que el equipo es de RD y España»). Si el cliente lo
+    // desmiente, es lo primero que cae.
+    { id: 'origen', valor: 'RD + España', etiqueta: 'equipo local y gerencia' },
+  ],
   cierreTitulo: '¿Quieres remar con nosotros?',
   cierreTexto:
     'Siempre buscamos gente que ame el mar y el trato de verdad con las personas. Si es lo tuyo, cuéntanos quién eres.',
