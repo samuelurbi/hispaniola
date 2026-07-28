@@ -36,6 +36,12 @@ export type PaqueteEvento = {
    *  pre-seleccionar un paquete en el form (Figma frame). */
   id: string
   nombre: string
+  /** [v2 2026-07-28] Etiqueta corta para el segmented del widget de reserva
+   *  online (evento/calculadora-evento.tsx): ahí cada pestaña mide ~85px y
+   *  «Hispaniola Premium Package» no cabe ni a 12px. El nombre completo se
+   *  sigue leyendo entero en la card de preview justo debajo y en el bloque
+   *  de paquetes de la página, así que la abreviatura nunca aparece sola. */
+  nombreCorto: string
   /** ej: "US$ 660.00" — "Starting at" según la web del cliente */
   precio: string
   /** ej: "1-12 Person" o "1-120 personas" */
@@ -269,6 +275,7 @@ const PARTY_BOAT: FichaEvento = {
       {
         id: 'premium',
         nombre: 'Hispaniola Premium Package',
+        nombreCorto: 'Premium',
         precio: 'US$ 1,188.00',
     precioBase: 1188,
     incluyeHasta: 12,
@@ -292,6 +299,7 @@ const PARTY_BOAT: FichaEvento = {
       {
         id: 'package-i',
         nombre: 'Package #I',
+        nombreCorto: '#I',
         precio: 'US$ 660.00',
     precioBase: 660,
     incluyeHasta: 12,
@@ -310,6 +318,7 @@ const PARTY_BOAT: FichaEvento = {
       {
         id: 'package-ii',
         nombre: 'Package #II',
+        nombreCorto: '#II',
         precio: 'US$ 780.00',
     precioBase: 780,
     incluyeHasta: 12,
@@ -329,6 +338,7 @@ const PARTY_BOAT: FichaEvento = {
       {
         id: 'package-iii',
         nombre: 'Package #III',
+        nombreCorto: '#III',
         precio: 'US$ 900.00',
     precioBase: 900,
     incluyeHasta: 12,

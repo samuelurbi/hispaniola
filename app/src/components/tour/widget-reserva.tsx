@@ -83,6 +83,12 @@ type Props = {
    *  `variante` (el bote del charter) el 2026-07-17 y por la misma razón —
    *  hay precedente, es el patrón de la casa. */
   onPaqueteChange?: (p: 'light' | 'premium') => void
+  /** [v2 2026-07-28] El nº de personas SUBE a la página, por el mismo motivo
+   *  que `variante` y `paquete`: la tabla de precios de la columna izquierda
+   *  llevaba desde el 07-17 prometiendo por escrito que «muestra el tramo que
+   *  aplica según las personas que elijas en el widget» — y no lo hacía. Era
+   *  una promesa falsa en pantalla, no solo una función que faltaba. */
+  onPersonasChange?: (n: number) => void
 }
 
 // Tope del contador de personas de ESTE booking. v3 (2026-07-17, Saona): con
@@ -222,6 +228,7 @@ export function WidgetReserva({
   variante: varianteProp,
   onVarianteChange,
   onPaqueteChange,
+  onPersonasChange,
 }: Props) {
   const [fecha, setFecha] = useState<string | null>(null)
   const [horario, setHorario] = useState(0)
@@ -310,6 +317,22 @@ export function WidgetReserva({
     if (onVarianteChange) onVarianteChange(id)
     setVarianteLocal(id)
   }
+  // [v2 2026-07-28] Publica el nº de personas hacia arriba (ver `onPersonasChange`
+  // en Props). Va por efecto y no colgado de cada `setPersonas` porque el valor
+  // sale de DOS modelos distintos —stepper simple y adultos+niños del dual—, y
+  // colgarlo de los handlers obligaba a acordarse en cinco sitios. Con el
+  // efecto, la página siempre ve el mismo número que el widget usa para
+  // calcular, incluido el primer render.
+  // ⚠️ Va AQUÍ ARRIBA, y no junto a `paxActuales` (que es donde pedía el
+  // cuerpo), porque más abajo hay dos `return` tempranos —booking 'cotizacion'
+  // y 'consulta'— y un hook después de ellos cambia el número de hooks entre
+  // renders. La expresión se repite en vez de leer `totalPersonas` porque esa
+  // constante se declara 15 líneas más abajo; es la MISMA fórmula, y si algún
+  // día deja de serlo, `paxActuales` y esto tienen que moverse juntos.
+  useEffect(() => {
+    onPersonasChange?.(esDual ? adultos + ninos : personas)
+  }, [esDual, adultos, ninos, personas, onPersonasChange])
+
   // Tope del stepper de personas:
   //  - esDual (Snorkel Lovers): el max del tour (30).
   //  - subVariantes (Saona): el tramo más alto (70 en catamarán).
@@ -637,7 +660,7 @@ export function WidgetReserva({
               el bloque de menú, y en ningún sitio más. */}
           <div
             className={`relative grid grid-cols-2 gap-1 rounded-full p-1 transition-colors duration-200 motion-reduce:transition-none ${
-              paquete === 'premium' ? 'bg-premium-fondo' : 'bg-linea'
+              paquete === 'premium' ? 'premium-pista' : 'bg-linea'
             }`}
           >
             {/* v3 (2026-07-17, fix Samuel): el thumb estaba MAL
@@ -650,10 +673,15 @@ export function WidgetReserva({
                 width del thumb (= 1 columna), + 4px = el gap. */}
             <span
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.375rem)] rounded-full shadow-sm transition-transform duration-200 ease-out motion-reduce:transition-none ${
-                paquete === 'premium' ? 'bg-premium-oro' : 'bg-papel'
+              className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.375rem)] rounded-full transition-transform duration-200 ease-out motion-reduce:transition-none ${
+                paquete === 'premium' ? 'premium-thumb' : 'bg-papel shadow-sm'
               }`}
-              style={{ transform: paquete === 'premium' ? 'translateX(calc(100% + 0.25rem))' : 'translateX(0)' }}
+              // [v2 2026-07-28] PREMIUM ES EL PRIMERO, así que el reposo del
+              // thumb es la IZQUIERDA y quien se desplaza es Light. Es la
+              // inversión de la condición anterior, no un ajuste de la fórmula:
+              // el `calc(100% + 0.25rem)` (1 ancho de thumb + el gap) sigue
+              // siendo correcto y ya costó una vuelta acertarlo el 07-17.
+              style={{ transform: paquete === 'light' ? 'translateX(calc(100% + 0.25rem))' : 'translateX(0)' }}
             />
             {/* [v2 2026-07-27] MECÁNICA DE DOS ESTADOS (reunión 07-24,
                 15:36-17:44). Premium no muestra siempre lo mismo:
@@ -664,9 +692,16 @@ export function WidgetReserva({
                   · con Premium elegido → su precio real, US$ 114.
                 Light siempre muestra su precio real: es el ancla del sitio y
                 no se toca. */}
+            {/* [v2 2026-07-28, pedido de Samuel: «Premium tiene que estar de
+                primero, a la izquierda»] El orden del array ES el orden en
+                pantalla. Y tiene lógica de producto: desde el 07-27 el widget
+                ABRE en Premium, así que la opción por defecto estaba apareciendo
+                en segundo lugar — se leía primero lo que no está elegido. En
+                lectura occidental el primer sitio es el de la opción que la casa
+                recomienda. */}
             {[
-              { id: 'light' as const, nombre: 'Light', precio: precioBase },
               { id: 'premium' as const, nombre: 'Premium', precio: precioBase + upgrade },
+              { id: 'light' as const, nombre: 'Light', precio: precioBase },
             ].map((p) => {
               const activo = paquete === p.id
               const muestraSalto = p.id === 'premium' && paquete === 'light' && upgrade > 0

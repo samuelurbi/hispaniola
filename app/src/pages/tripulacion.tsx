@@ -1,5 +1,7 @@
 import { Footer } from '@/components/home/footer'
+import { CabeceraInterna } from '@/components/internas/cabecera-interna'
 import { HeroInterna } from '@/components/internas/hero-interna'
+import { CierreEquipo } from '@/components/equipo/cierre-equipo'
 import { FranjaEquipo } from '@/components/equipo/franja-equipo'
 import { GridEquipo } from '@/components/equipo/grid-equipo'
 import { Meta } from '@/components/seo/meta'
@@ -45,15 +47,11 @@ export function TripulacionPage() {
         ruta="/tripulacion"
       />
       <HeroInterna ctaHref="/#tours">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-aqua">
-            {EQUIPO_PAGINA.eyebrow}
-          </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-white sm:text-5xl">
-            {EQUIPO_PAGINA.titulo}
-          </h1>
-          <p className="mt-4 text-lg text-white/85">{EQUIPO_PAGINA.lead}</p>
-        </div>
+        <CabeceraInterna
+          eyebrow={EQUIPO_PAGINA.eyebrow}
+          titulo={EQUIPO_PAGINA.titulo}
+          lead={EQUIPO_PAGINA.lead}
+        />
       </HeroInterna>
 
       <div className="mx-auto max-w-contenido px-5 py-12 sm:px-10 lg:py-16">
@@ -63,6 +61,11 @@ export function TripulacionPage() {
         <div className="flex flex-col gap-10 lg:gap-12">
           <FranjaEquipo />
           <GridEquipo />
+          {/* El cierre va fuera de GridEquipo (donde vivía): no depende del
+              filtro ni del equipo, es el remate de la página. */}
+          <div className="mt-6">
+            <CierreEquipo />
+          </div>
         </div>
       </div>
 

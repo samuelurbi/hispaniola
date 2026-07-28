@@ -367,7 +367,7 @@ export const NAV_SOSTENIBILIDAD: ItemNav[] = [
     id: 'sostenibilidad',
     nombre: 'Nuestra ventaja competitiva',
     descripcion: 'Arrecifes, tortugas y comunidad: lo que tu reserva sostiene, con cifras.',
-    to: '/sostenibilidad',
+    to: '/ventaja-competitiva',
   },
   {
     id: 'fundacion',
@@ -1187,8 +1187,12 @@ export type Reel = {
   fotoAlt: string
   /** Video vertical del reel. null = pendiente del cliente. */
   video: string | null
-  /** Red donde vive. Decide el icono de la card. */
-  red: 'instagram' | 'tiktok'
+  /** Red donde vive. Sin consumidores desde que se retiró el badge de red
+   *  (v2 2026-07-27, ver reels-sociales.tsx) — opcional para que otros
+   *  carriles que reutilizan el componente (el de /instalaciones, que no son
+   *  reels de redes sino los verticales de las zonas) no tengan que inventarse
+   *  una red a la que esos videos no pertenecen. */
+  red?: 'instagram' | 'tiktok'
 }
 
 export const REELS: Reel[] = [

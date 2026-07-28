@@ -195,7 +195,19 @@ export const EQUIPO_PAGINA = {
     // desmiente, es lo primero que cae.
     { id: 'origen', valor: 'RD + España', etiqueta: 'equipo local y gerencia' },
   ],
+  cierreEyebrow: 'Trabaja con nosotros',
   cierreTitulo: '¿Quieres remar con nosotros?',
+  // Foto de fondo del banner de cierre (equipo/cierre-equipo.tsx). Mar abierto
+  // y vela: es la toma más UNIFORME de las disponibles, y en un banner con el
+  // texto centrado eso es lo que decide. Se probaron 6 candidatas; las de
+  // grupo (hero-catamaran-1, galeria-semi-privado-6) traen un cielo muy claro
+  // justo en la banda donde cae el eyebrow —la parte del degradado que solo
+  // tapa un 35%— y ahí el texto se despega. Y footer-oceano queda descartada
+  // por vecindad: es el fondo del Footer, tres centímetros más abajo.
+  //
+  // La comparte con el cierre de /por-que-reservar, y está bien que así sea:
+  // es el mismo componente cerrando dos páginas, no un descuido.
+  cierreFoto: 'hero-catamaran-2',
   cierreTexto:
     'Siempre buscamos gente que ame el mar y el trato de verdad con las personas. Si es lo tuyo, cuéntanos quién eres.',
   // El botón de la maqueta decía «Ver vacantes», pero /trabaja-con-nosotros no

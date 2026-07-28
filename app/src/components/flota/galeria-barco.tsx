@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Play, Rotate3d } from 'lucide-react'
+import { useDevFlag } from '@/dev/use-dev-flag'
 import type { MediaBarco } from '@/data/flota'
 
 // EL VISOR DE LA CARD DE BARCO (slide 28 del PDF v2 + reunión del 07-24).
@@ -38,11 +39,12 @@ import type { MediaBarco } from '@/data/flota'
 // el mismo que ya aplican el carrusel de la TourCard y el fundido de las
 // internas): se queda en su póster con un botón de play encima. Ese es además
 // el frame que viaja a Figma.
-export function MediaBarco({
+export function GaleriaBarco({
   media,
   nombre,
   chip,
   onAbrir360,
+  primera = false,
 }: {
   media: MediaBarco[]
   /** Nombre del barco — se usa en las etiquetas accesibles. */
@@ -51,10 +53,20 @@ export function MediaBarco({
   chip: string
   /** Sin handler, el botón de 360º no se pinta (ausencia silenciosa). */
   onAbrir360?: () => void
+  /** [dev-mode] true solo en la 1ª card de la rejilla: es la que responde a
+   *  los deep-links del Glosario Dev, para que un flag no dispare seis veces. */
+  primera?: boolean
 }) {
   const [indice, setIndice] = useState(0)
   const contenedorRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  // [dev-mode] ?dev-galeria-barco=foto pasa la 1ª card a la 2ª pieza (una
+  // FOTO) — el frame de Figma del estado «galería» de la card, que por
+  // defecto arranca siempre en el vídeo. Ver dev-registry.ts.
+  useDevFlag('dev-galeria-barco', (v) => { // [dev-mode]
+    if (primera && v === 'foto') setIndice(1) // [dev-mode]
+  }) // [dev-mode]
 
   const n = media.length
   const actual = media[indice]

@@ -2466,6 +2466,27 @@
   background-color: color-mix(in srgb, var(--color-navy) 32%, transparent);
 }
 
+/* [v2 2026-07-28] Modificador para superficies del MODO PREMIUM (la banda
+   oscura de /flota, flota/cocina-flotante-premium.tsx). Va SOBRE
+   `.scroll-sutil`, no lo reemplaza: hereda el grosor, el gutter estable y el
+   radio, y solo cambia el color del pulgar. Hace falta porque el pulgar base
+   es navy translúcido y sobre --color-premium-fondo (casi negro) desaparece
+   del todo — en una tira horizontal que HAY que deslizar, un scrollbar
+   invisible es una pista que se pierde. El oro al 40% se ve sin cantar, que
+   es el mismo criterio con el que --color-premium-borde separa sin dibujar
+   una reja. */
+.scroll-sutil-premium {
+  scrollbar-color: color-mix(in srgb, var(--color-premium-oro) 40%, transparent) transparent;
+}
+
+.scroll-sutil-premium::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--color-premium-oro) 40%, transparent);
+}
+
+.scroll-sutil-premium::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--color-premium-oro) 65%, transparent);
+}
+
 /* Marco de la caja del widget de reserva (correcciones v2, 2026-07-27).
    SOMBRA INTERNA en vez de `ring`, idea de Samuel al detectar que el borde se
    veía a trozos: un `ring` de Tailwind se pinta POR FUERA del borde, así que
@@ -2562,4 +2583,105 @@
   .group:hover .sello-destello {
     animation: none;
   }
+}
+
+/* ---------- Carta de platos del charter (tour/carta-charter.tsx) ----------
+   2026-07-28, Samuel: «la sección de menú a medida me parece sumamente poco
+   atractiva… es importante para que las personas se enamoren y compren». La
+   lista con checks pasa a ser una CARTA: rejilla asimétrica de fotos reales
+   con el plato estrella en grande.
+
+   Solo el alto de fila vive aquí: `grid-auto-rows` no tiene utilidad de
+   Tailwind que lea un token de spacing, y el valor cambia en lg — que es
+   justo lo que una clase con media query resuelve y un `style` inline no.
+   Todo lo demás (columnas, spans, gap, radios, color) va en el componente
+   con utilidades, para que en Figma se lea la composición y no un CSS oculto. */
+.carta-platos {
+  grid-auto-rows: var(--spacing-carta-fila-movil);
+}
+
+@media (width >= 64rem) {
+  .carta-platos {
+    grid-auto-rows: var(--spacing-carta-fila);
+  }
+}
+
+/* Las fotos de plato de la carta del charter. Los bodegones del cliente están
+   tirados sobre fondo blanco con luz plana, y dentro de una card con velo
+   encima la comida se apaga: se lee gris azulada, no apetecible. Un punto de
+   saturación y otro de contraste devuelven el color del plato sin tocar los
+   archivos ni pasar por un editor — y desaparecen solos el día que lleguen las
+   fotos nuevas en alta (slide 4), que ya vendrán tratadas.
+   Va en CSS y no en utilidades porque `filter` con dos funciones encadenadas
+   en Tailwind exige valores arbitrarios, que en este proyecto están vetados. */
+.carta-foto {
+  filter: saturate(1.14) contrast(1.06);
+}
+
+/* ═══ ESTÉTICA PREMIUM ══════════════════════════════════════════════════════
+   Samuel, 2026-07-28: «en cualquier cosa premium no puede ser solo fondo negro
+   y ya [...] la caja de Light/Premium se ve horrible, me parece muy IA slop
+   genérica, así que vamos a trabajar esa caja primero para definir un estilo de
+   premium y luego lo aplicamos al resto».
+
+   Estas clases son ese estilo. Se estrenan en el selector Light/Premium y de
+   ahí saldrán al resto del modo premium (banner «estás viendo la versión
+   Premium», widget de detalles, comparador).
+
+   EL DIAGNÓSTICO, porque define las reglas: lo que fallaba no era la paleta —
+   negro y oro es correcto— sino que estaban aplicados como RELLENOS PLANOS. Un
+   rectángulo negro liso con un rectángulo mostaza liso encima no evoca lujo;
+   evoca una plantilla. Lo que hace que un material se lea como caro es que
+   RESPONDA A LA LUZ: el oro tiene un filo claro arriba y se hunde a ámbar
+   abajo, y las superficies tienen relieve — lo hundido se distingue de lo que
+   sobresale.
+
+   De ahí las tres reglas del modo premium en este proyecto:
+     1. El oro va SIEMPRE en degradado, nunca en plano.
+     2. Lo interactivo SOBRESALE (filo de luz arriba, sombra abajo); su soporte
+        se HUNDE (sombra interior). Así el ojo sabe qué se puede tocar sin que
+        haya que dibujar un borde.
+     3. Los separadores son hairlines de oro a muy baja opacidad, no líneas
+        grises. Una reja gris sobre negro es lo que hace que algo parezca un
+        formulario de admin.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* La PISTA: la superficie sobre la que descansa lo demás. Va hundida.
+   El `inset` oscuro de arriba es lo que la mete hacia dentro (la luz de una
+   escena viene de arriba, así que una superficie hundida se sombrea en su
+   borde superior). El hairline de oro la separa del blanco del widget sin
+   dibujar una caja gris. */
+.premium-pista {
+  /* El degradado es MUY corto a propósito (dos tonos casi iguales): no se ve
+     como degradado, se ve como una superficie que recibe luz. Un negro
+     absolutamente plano es lo que Samuel señaló como «solo fondo negro y ya» —
+     el ojo lo lee como un agujero, no como un material.
+     Va oscuro ARRIBA y claro abajo, que es al revés que un fondo normal: es lo
+     que hace una superficie hundida, donde el labio de arriba proyecta sombra
+     sobre el fondo del hueco. */
+  background: linear-gradient(180deg, #0b0e12 0%, var(--color-premium-fondo) 55%, #171c23 100%);
+  box-shadow:
+    inset 0 1px 3px rgb(0 0 0 / 55%),
+    inset 0 0 0 1px var(--color-premium-borde);
+}
+
+/* El THUMB: la pieza de metal que sobresale.
+   · El degradado va a 155° y no a 180° para que la luz entre en diagonal —
+     un degradado vertical se lee como fondo, uno en diagonal como reflejo.
+   · El filo blanco de arriba y el negro de abajo son 1px cada uno: es lo que
+     convierte un relleno en una PIEZA con canto. Sin ellos el degradado solo
+     parece un fondo bonito.
+   · El halo exterior es de oro y no negro: una sombra negra sobre fondo negro
+     no se ve, pero un halo cálido hace que el metal parezca emitir algo. */
+.premium-thumb {
+  background: linear-gradient(
+    155deg,
+    var(--color-premium-oro-luz) 0%,
+    var(--color-premium-oro) 48%,
+    var(--color-premium-oro-hondo) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 45%),
+    inset 0 -1px 0 rgb(0 0 0 / 28%),
+    0 2px 10px rgb(201 162 39 / 28%);
 }

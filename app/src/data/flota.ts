@@ -12,7 +12,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react'
-import { FLOTA, type BarcoFlota } from './nosotros'
+import { FLOTA, TIMELINE_FLOTA, type BarcoFlota } from './nosotros'
 
 // ─────────────────────────────────────────────────────────────────────────
 // PÁGINA FLOTA (/flota) — contenido propio de la página.
@@ -60,7 +60,7 @@ export const FAMILIA_FLOTA = {
   titulo: 'Bienvenido a la familia Hispaniola',
   parrafos: [
     'Te damos la bienvenida a ti y a los tuyos para disfrutar el calor caribeño y la brisa del mar a bordo de uno de nuestros catamaranes. Aquí no eres una reserva más — eres parte de la familia por un día.',
-    'Cada barco de esta página es NUESTRO. No somos una central de reservas que revende la salida de otro: el capitán, la tripulación, el chef y el mantenimiento son de casa, y por eso podemos responder de lo que pasa a bordo.',
+    'Cada barco de esta página es nuestro. No somos una central de reservas que revende la salida de otro: el capitán, la tripulación, el chef y el mantenimiento son de casa, y por eso podemos responder de lo que pasa a bordo.',
   ],
   // La caja de destacado del slide, verbatim del diferenciador real de
   // about-hispaniola.php (los barcos caben 100+, se reserva menos).
@@ -111,6 +111,15 @@ export const FAMILIA_FLOTA = {
   ],
 }
 
+// La línea de tiempo de /flota. Es TIMELINE_FLOTA (data/nosotros.ts) con el
+// hito «Hoy» reescrito para que su cifra se CUENTE en vez de estar escrita a
+// mano — el mismo motivo que el KPI de arriba. No se corrige en el origen
+// porque allí `TIMELINE_FLOTA` se declara ANTES que `FLOTA` y leer la
+// longitud desde ahí reventaría en la zona muerta temporal del módulo.
+export const RECORRIDO_FLOTA = TIMELINE_FLOTA.map((hito) =>
+  hito.anio === 'Hoy' ? { ...hito, titulo: `Flota de ${FLOTA.length} embarcaciones propias` } : hito,
+)
+
 // ═════════════════════════════════════════════════════════════════════════
 // §2 — LA MEDIA DE CADA BARCO (slide 28)
 // ═════════════════════════════════════════════════════════════════════════
@@ -136,6 +145,17 @@ export type MediaBarco =
   | { tipo: 'video'; src: string; poster: string; etiqueta: string; alt: string }
   | { tipo: 'foto'; foto: string; etiqueta: string; alt: string }
 
+// Cabecera de la rejilla. El titular de /nosotros decía «Seis catamaranes,
+// uno para cada plan» — con la cifra dentro y con «catamaranes», que ya no es
+// exacto (el Joker es una lancha y el Karaya una plataforma de eventos). Este
+// no envejece al pasar a 12 ni miente sobre el tipo de casco.
+export const REJILLA_FLOTA = {
+  eyebrow: 'La flota',
+  titulo: 'Una embarcación para cada plan',
+  texto:
+    'Todas propias, bien mantenidas y siempre impecables — cuidamos cada detalle para que tu tour se sienta especial, no en serie. De cada una tienes su vídeo, su galería y la ficha técnica completa.',
+}
+
 const VIDEO_BARCO = {
   tipo: 'video',
   src: '/video/hero.mp4',
@@ -157,38 +177,49 @@ function galeriaDe(barco: BarcoFlota, extras: Array<[foto: string, etiqueta: str
 // decisión del 2026-07-27 (plan 04 §2). Cada barco lleva un juego distinto
 // para que la tira no se lea idéntica seis veces, pero ninguna de estas fotos
 // es de ESE barco concreto. Reemplazar cuando lleguen las reales.
+//
+// ⚠️ CADA ETIQUETA Y CADA `alt` SE VERIFICARON ABRIENDO EL ARCHIVO, uno por
+// uno. No es celo excesivo: el primer montaje los escribió deduciéndolos del
+// NOMBRE del archivo y salieron tres etiquetas falsas —
+// `galeria-semi-privado-1` no es el trampolín de proa sino el tanque del
+// vivero de coral, `galeria-charter-privado-2` no es la zona de sombra sino
+// el grupo con cocos en la playa, y `events-6` no es el segundo nivel sino
+// un plano submarino del arrecife. Un `alt` que describe otra foto es una
+// mentira para quien navega con lector de pantalla, y una etiqueta de
+// encuadre equivocada lo es para todo el mundo. Si mañana se cambia un
+// archivo, hay que volver a mirarlo.
 export const MEDIA_FLOTA: Record<string, MediaBarco[]> = Object.fromEntries(
   FLOTA.map((barco, i) => {
     const juegos: Array<Array<[string, string, string]>> = [
       [
-        ['cocina-flotante', 'Cocina flotante', 'La parrilla de la cocina flotante en funcionamiento'],
-        ['galeria-charter-privado-2', 'Zona de sombra', 'Zona de sombra con asientos acolchados a bordo'],
-        ['galeria-semi-privado-1', 'Proa y trampolín', 'Trampolín de proa con huéspedes tumbados al sol'],
+        ['galeria-charter-privado-3', 'Cubierta y comedor', 'Cubierta superior con los huéspedes comiendo en mesas bajo el toldo'],
+        ['cocina-flotante', 'Cocina flotante', 'El chef y dos huéspedes tras la encimera, con las bandejas de mariscos y carnes recién hechos'],
+        ['galeria-charter-privado-7', 'En el agua', 'Grupo bañándose junto al catamarán fondeado'],
       ],
       [
-        ['galeria-charter-privado-5', 'Cubierta principal', 'Cubierta principal con la tripulación atendiendo al grupo'],
-        ['bar-flotante', 'Barra a bordo', 'La barra del catamarán durante el servicio de bebidas'],
-        ['galeria-isla-saona-3', 'Fondeado', 'El catamarán fondeado sobre agua turquesa'],
+        ['events-8', 'Servicio a bordo', 'Bufé servido en la cubierta durante una salida'],
+        ['galeria-charter-privado-5', 'A bordo', 'Grupo brindando en la cubierta del catamarán'],
+        ['galeria-isla-saona-3', 'Fondeado', 'El catamarán fondeado sobre agua turquesa poco profunda'],
       ],
       [
-        ['galeria-snorkel-lovers-4', 'Plataforma de baño', 'Plataforma de baño con la escalera desplegada'],
-        ['galeria-semi-privado-6', 'Navegando', 'El catamarán navegando con la costa al fondo'],
-        ['cocina-flotante-plataforma', 'Cocina flotante', 'La plataforma de la cocina flotante vista desde el agua'],
+        ['galeria-snorkel-lovers-4', 'La parada de snorkel', 'Peces de colores sobre el arrecife en la parada de snorkel'],
+        ['galeria-semi-privado-2', 'A bordo', 'Dos huéspedes sentados en la borda con sus bebidas'],
+        ['galeria-isla-saona-7', 'Almuerzo en la playa', 'Mesa larga con el almuerzo servido bajo las palmeras'],
       ],
       [
-        ['galeria-charter-privado-7', 'Cubierta superior', 'Cubierta superior con vistas abiertas al mar'],
-        ['galeria-isla-saona-7', 'Fondeado', 'Fondeo en una piscina natural de aguas poco profundas'],
-        ['galeria-snorkel-lovers-9', 'En el agua', 'Huéspedes bañándose junto al barco'],
+        ['galeria-semi-privado-6', 'El tobogán', 'Grupo en el agua junto al catamarán, con el tobogán desplegado'],
+        ['galeria-charter-privado-2', 'Playa desierta', 'Grupo con cocos recién abiertos en la playa, con el catamarán al fondo'],
+        ['galeria-snorkel-lovers-9', 'En cubierta', 'Huéspedes preparando el equipo en la cubierta de popa'],
       ],
       [
-        ['galeria-semi-privado-2', 'Zona de sombra', 'Zona cubierta con bancos corridos'],
-        ['bar-flotante', 'Barra a bordo', 'Servicio de bebidas en la barra flotante'],
-        ['galeria-charter-privado-3', 'Exterior', 'Vista lateral de la embarcación al sol'],
+        ['events-3', 'Bar flotante', 'El bar flotante con huéspedes alrededor, de pie en el agua'],
+        ['galeria-charter-privado-5', 'A bordo', 'Grupo brindando en la cubierta de la embarcación'],
+        ['bar-flotante', 'Barra en el agua', 'La barra flotante durante el servicio de bebidas'],
       ],
       [
-        ['events-3', 'Montaje de evento', 'Cubierta montada para una celebración a bordo'],
-        ['events-6', 'Segundo nivel', 'Segundo nivel de la embarcación durante un evento'],
-        ['events-8', 'Iluminación de noche', 'La embarcación iluminada durante un evento nocturno'],
+        ['events-8', 'Servicio a bordo', 'Bufé servido en la cubierta durante una celebración'],
+        ['galeria-charter-privado-3', 'Cubierta y comedor', 'Cubierta superior con las mesas montadas bajo el toldo'],
+        ['galeria-isla-saona-3', 'Fondeado', 'La embarcación fondeada sobre agua turquesa poco profunda'],
       ],
     ]
     return [barco.nombre, galeriaDe(barco, juegos[i % juegos.length])]
@@ -206,7 +237,8 @@ export const MEDIA_FLOTA: Record<string, MediaBarco[]> = Object.fromEntries(
 // —una etiqueta sobre el propio reproductor, no una nota al pie— para que
 // nadie lo confunda con un recorrido real. En cuanto lleguen los archivos,
 // esto pasa a ser un campo por barco y los que no lo tengan pierden el botón.
-export const TOUR_360_ES_DEMO = true
+// El gancho técnico ya está puesto: la card solo pinta el botón si el barco
+// tiene una pieza de vídeo en `MEDIA_FLOTA` (ver flota/barco-card.tsx).
 
 // ═════════════════════════════════════════════════════════════════════════
 // §3 — LA FICHA TÉCNICA COMPLETA (el modal del botón secundario)
@@ -244,13 +276,35 @@ export type FilaSpec = {
   valor: string | null
   /** Lo que hace la ficha «bien explicada»: qué significa el dato para quien va a bordo. */
   nota?: string
-  /** 'verificado' = dato real del armador. Sin este campo, es dato de ejemplo. */
+  /**
+   * 'verificado' = dato real del armador (about-hispaniola.php) o política ya
+   * publicada. Sin este campo, es dato de ejemplo.
+   *
+   * ⚠️ YA NO SE PINTA (2026-07-28, Samuel: «quita de la ficha lo que dice que
+   * son datos de ejemplo»). El modal llevaba un cartel arriba explicando la
+   * procedencia y un punto aqua por fila; los dos se retiran — mismo criterio
+   * que el aviso del visor de 360º: la maqueta enseña la página, no sus
+   * andamios.
+   *
+   * El campo SE QUEDA a propósito y no es código muerto: es la única marca de
+   * qué se puede publicar tal cual y qué hay que sustituir cuando lleguen las
+   * specs reales de cada barco. Perderlo obligaría a rehacer esa criba a mano
+   * sobre 60 filas × 12 embarcaciones.
+   */
   origen?: 'verificado'
 }
 
 export type GrupoSpec = {
   id: string
   titulo: string
+  /**
+   * El mismo bloque, en una sola palabra, para el índice lateral del modal
+   * (2026-07-28, Samuel: «me parece un poco confuso el menú lateral, vamos a
+   * intentar simplificarlo»). Con el título largo, 6 de los 9 ítems partían en
+   * dos líneas y el índice se leía como un segundo cuerpo de texto en vez de
+   * como una lista de saltos.
+   */
+  tituloCorto: string
   icono: LucideIcon
   /** Una línea que explica de qué va el bloque antes de soltar la tabla. */
   intro: string
@@ -581,6 +635,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'identificacion',
       titulo: 'Identificación y registro',
+      tituloCorto: 'Identificación',
       icono: Ship,
       intro: 'Qué embarcación es exactamente y con qué papeles navega. Es lo primero que mira cualquiera que sepa de barcos.',
       filas: [
@@ -600,6 +655,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'dimensiones',
       titulo: 'Dimensiones y arquitectura',
+      tituloCorto: 'Dimensiones',
       icono: Ruler,
       intro: 'Cuánto mide y de qué está hecha. La manga (el ancho) es lo que de verdad decide cuánta cubierta pisas, más que la eslora.',
       filas: [
@@ -622,6 +678,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'capacidad',
       titulo: 'Capacidad y distribución',
+      tituloCorto: 'Capacidad',
       icono: Users,
       intro: 'Cuánta gente cabe, cuánta embarcamos de verdad y cómo se reparte a bordo. Las dos cifras no coinciden y es a propósito.',
       filas: [
@@ -648,6 +705,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'propulsion',
       titulo: 'Propulsión y rendimiento',
+      tituloCorto: 'Propulsión',
       icono: Gauge,
       intro: 'Qué la mueve y a qué ritmo. En una excursión de día la velocidad importa menos que la autonomía y el consumo.',
       filas: [
@@ -666,6 +724,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     grupos.push({
       id: 'vela',
       titulo: 'Aparejo y vela',
+      tituloCorto: 'Vela',
       icono: Wind,
       intro: 'El único de la flota que navega de verdad a vela: con viento estable se apagan los motores y el trayecto se hace en silencio.',
       filas: [
@@ -682,6 +741,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'sistemas',
       titulo: 'Sistemas de a bordo',
+      tituloCorto: 'Sistemas',
       icono: Zap,
       intro: 'Agua, corriente y residuos. Es lo que decide si a las tres horas de salida sigue habiendo agua fría, hielo y un baño que funcione.',
       filas: [
@@ -696,6 +756,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'navegacion',
       titulo: 'Navegación y comunicaciones',
+      tituloCorto: 'Navegación',
       icono: Compass,
       intro: 'Con qué se gobierna y cómo se pide ayuda. Todo redundante: si falla un equipo, hay otro que hace su trabajo.',
       filas: NAVEGACION_COMUN,
@@ -703,6 +764,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'seguridad',
       titulo: 'Seguridad',
+      tituloCorto: 'Seguridad',
       icono: ShieldCheck,
       intro: 'El bloque que casi nadie enseña y el que de verdad separa a un operador propio de un intermediario. Todo se revisa antes de cada temporada.',
       filas: SEGURIDAD_COMUN(barco.capacidad),
@@ -710,6 +772,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'cocina',
       titulo: 'Cocina, barra y confort',
+      tituloCorto: 'Cocina y confort',
       icono: UtensilsCrossed,
       intro: 'Somos la única empresa de excursiones del país con cocina flotante. En términos técnicos, esto es lo que eso significa.',
       filas: [
@@ -734,6 +797,7 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
     {
       id: 'sostenibilidad',
       titulo: 'Sostenibilidad a bordo',
+      tituloCorto: 'Sostenibilidad',
       icono: Leaf,
       intro: 'No es una declaración de intenciones: son decisiones de equipamiento y de operación que se pueden comprobar en el barco.',
       filas: SOSTENIBILIDAD_COMUN,
@@ -743,19 +807,34 @@ export function fichaTecnicaDe(barco: BarcoFlota): GrupoSpec[] {
   return grupos
 }
 
-/** Las 4 cifras que abren el modal, antes de la ficha larga. */
+/**
+ * Las 4 cifras que abren el modal, antes de la ficha larga.
+ *
+ * La potencia se reduce al TOTAL entre paréntesis («2 × 240 hp (480 hp
+ * totales)» → «480 hp»): en una casilla de titular, la cadena completa se
+ * corta a media palabra y una cifra truncada no informa de nada. El desglose
+ * por motor sigue entero en el bloque de propulsión, que es su sitio.
+ */
 export function titularesTecnicos(barco: BarcoFlota) {
   const p = PERFILES[barco.nombre]
+  const total = p?.potencia.match(/\(([^)]*)\)/)?.[1]?.replace(' totales', '')
   return [
     { label: 'Eslora', valor: barco.eslora, icono: Ruler },
     { label: 'Pasaje', valor: barco.capacidad, icono: Users },
     { label: 'Año', valor: barco.anio, icono: Anchor },
-    { label: 'Potencia', valor: p?.potencia ?? null, icono: Gauge },
+    { label: 'Potencia', valor: total ?? p?.potencia ?? null, icono: Gauge },
   ]
 }
 
-export const FICHA_TECNICA_AVISO =
-  'Ficha de ejemplo. Los datos marcados con · están verificados contra la documentación del armador; el resto ilustra la estructura definitiva y se sustituirá con las specs reales de cada embarcación.'
+// [v2 2026-07-28] `FICHA_TECNICA_AVISO` se retira (Samuel: «quita de la ficha
+// lo que dice que son datos de ejemplo»). Era el cartel que encabezaba el
+// modal explicando la procedencia y la leyenda del punto de «verificado».
+//
+// ⚠️ Lo que se ha quitado es el CARTEL, no la regla: las specs de ejemplo
+// siguen marcadas en el dato (`origen`, arriba) y los huecos sin fuente
+// siguen diciendo «Pendiente» en vez de inventarse un número. Antes de
+// publicar hay que sustituirlas por las reales — la criba está hecha en el
+// código, no en pantalla.
 
 // ═════════════════════════════════════════════════════════════════════════
 // §4 — BANNER «CERO PLÁSTICO» (slide 30)
@@ -788,7 +867,7 @@ export const CERO_PLASTICO = {
     { titulo: 'Pajitas vegetales', texto: 'Y ninguna bolsa de plástico en la cocina flotante.' },
   ],
   cta: 'Ver el resto de nuestro compromiso',
-  ctaHref: '/sostenibilidad',
+  ctaHref: '/ventaja-competitiva',
   // Foto de fondo: agua turquesa limpia vista desde el aire — la misma
   // familia de imagen que ya usa el banner de arrecife, porque el mensaje
   // («el mar que devolvemos como lo encontramos») es el que pide mar limpio,
@@ -839,13 +918,21 @@ export const COCINA_PREMIUM = {
     { cifra: '7 platos', label: 'a elegir, cocinados a la parrilla mientras navegas' },
   ],
   cta: { label: 'Vive la cocina flotante', to: '/#tours' },
-  // La tira de «míralo por dentro» del slide 33: las fotos reales de cocina y
-  // barra que ya tenemos descargadas de la web del cliente.
+  // La tira de «míralo por dentro» del slide 33.
+  //
+  // ⚠️ NINGUNA DE ESTAS 5 SE REPITE EN EL MOSAICO de arriba, y es una regla,
+  // no una casualidad: el mosaico ya enseña las 3 fotos reales de cocina/barra
+  // que hay en el repo (cocina-flotante, cocina-flotante-plataforma,
+  // bar-flotante), y el primer montaje las volvía a poner aquí — la misma
+  // imagen dos veces a 40px de distancia, que es peor que no tener tira. Estas
+  // 5 cuentan el otro lado del mismo argumento: el SERVICIO (el bufé montado,
+  // comiendo en cubierta, el almuerzo en la playa, el brindis, la barra en el
+  // agua). Pies verificados abriendo cada archivo, igual que MEDIA_FLOTA.
   galeria: [
-    { foto: 'cocina-flotante', pie: 'La parrilla a bordo' },
-    { foto: 'cocina-flotante-plataforma', pie: 'La plataforma de cocina' },
-    { foto: 'bar-flotante', pie: 'El bar flotante' },
-    { foto: 'galeria-charter-privado-5', pie: 'Platos recién servidos' },
-    { foto: 'galeria-semi-privado-1', pie: 'El equipo de cocina' },
+    { foto: 'events-8', pie: 'El bufé montado a bordo' },
+    { foto: 'galeria-charter-privado-3', pie: 'Comiendo en cubierta' },
+    { foto: 'galeria-isla-saona-7', pie: 'El almuerzo en la playa' },
+    { foto: 'galeria-charter-privado-5', pie: 'El brindis' },
+    { foto: 'events-3', pie: 'La barra, en el agua' },
   ],
 }

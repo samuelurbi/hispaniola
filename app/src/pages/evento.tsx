@@ -10,6 +10,7 @@ import { IncluyeEvento } from '@/components/evento/incluye-evento'
 import { PaquetesEvento } from '@/components/evento/paquetes-evento'
 import { OtrasOcasiones } from '@/components/evento/otras-ocasiones'
 import { GaleriaMosaico } from '@/components/internas/galeria-mosaico'
+import { VideoAcompanante } from '@/components/tour/video-acompanante'
 import * as Accordion from '@/components/alignui/accordion'
 import { TituloSeccion } from '@/components/tour/titulo-seccion'
 import { BLOQUE_FICHA } from '@/components/tour/bloque-ficha'
@@ -126,6 +127,24 @@ export function EventoPage() {
                   .map((p) => p.foto)
                   .filter((f): f is string => f !== null)}
               />
+
+              {/* [v2 2026-07-28, pedido de Samuel: «al estar el video vertical
+                  al lado del grid también debe aparecer sticky/fijo abajo a la
+                  izquierda como en los tours»] Mismo componente y mismo sitio
+                  que en la ficha (tour/video-acompanante.tsx): se monta justo
+                  después del mosaico porque su centinela mide desde aquí —
+                  solo aparece cuando el video del mosaico ya salió de pantalla,
+                  para no enseñar el mismo video dos veces. Va a la IZQUIERDA
+                  porque la derecha es del widget, y no se pinta en móvil.
+                  Se hereda también la salida pactada con el cliente: se puede
+                  CERRAR y no vuelve en esa sesión. */}
+              {evento.videoGaleria !== null ? (
+                <VideoAcompanante
+                  src={evento.videoGaleria}
+                  poster={`/fotos/${evento.foto}.webp`}
+                  etiqueta={evento.nombre}
+                />
+              ) : null}
 
               {/* Descripción larga — 2 párrafos en una card BLOQUE_FICHA
                   (misma receta que la ficha de tour, sin el H2 de

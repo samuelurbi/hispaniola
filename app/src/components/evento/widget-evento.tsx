@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Minus, Plus, MessageCircle, Tag, Users } from 'lucide-react'
+import * as Modal from '@/components/alignui/modal'
 import * as Select from '@/components/alignui/select'
 import * as FancyButton from '@/components/alignui/fancy-button'
 import * as CompactButton from '@/components/alignui/compact-button'
@@ -295,44 +296,20 @@ export function WidgetEvento({ evento, colapsable = false }: Props) {
     navigate(`/eventos/${evento.slug}/gracias?reserva=${cotizacion.codigo}`, { replace: true })
   }
 
-  // ESTADO PLEGADO: una línea que nombra el caso de uso + un botón discreto.
-  // El botón es `basic` (neutro) a propósito: el coral de esta columna es del
-  // CTA de reserva, y dos botones coral seguidos serían dos «acción
-  // principal».
-  if (!abierto) {
-    return (
-      <Caja>
-        <p className="font-display text-base font-semibold text-navy">
-          ¿Tu evento no encaja en un paquete?
-        </p>
-        <p className="-mt-2 text-sm text-navy-sub">
-          Bodas, grupos grandes o menú a medida: te lo cotizamos gratis y sin compromiso, con
-          respuesta en menos de 24 h.
-        </p>
-        <FancyButton.Root
-          type="button"
-          variant="basic"
-          className="w-full"
-          onClick={() => setAbierto(true)}
-          aria-expanded={false}
-          aria-controls="evento-form"
-        >
-          {evento.ctaPrincipal}
-        </FancyButton.Root>
-      </Caja>
-    )
-  }
-
-  // Mismo banner "Ahorra 5% en efectivo" que el widget de tour — es
-  // confianza, no precio, y aplica también a eventos: reservar por
-  // WhatsApp directo (no por OTA) tiene el mismo descuento.
-  return (
-    <Caja>
-      <h2 className="font-display text-lg font-semibold text-navy">
-        {evento.ctaPrincipal}
-      </h2>
-
-      <form id="evento-form" onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate={false}>
+  // EL FORMULARIO, una sola vez. Se pinta o dentro de la Caja de la columna
+  // (bodas, empresas) o dentro del modal (party boat) — mismos campos, misma
+  // validación, mismo submit. `enModal` solo cambia la REJILLA: en la columna
+  // de 374px los campos van uno debajo de otro; en el modal, que es el doble
+  // de ancho, van a 2 columnas para que el formulario entero se lea sin
+  // scroll (que es justo lo que se venía a arreglar).
+  const formulario = (enModal: boolean) => (
+    <>
+      <form
+        id="evento-form"
+        onSubmit={handleSubmit}
+        className={enModal ? 'grid gap-3 sm:grid-cols-2' : 'flex flex-col gap-3'}
+        noValidate={false}
+      >
         <Campo
           id="evento-nombre"
           label="Nombre"
@@ -382,7 +359,18 @@ export function WidgetEvento({ evento, colapsable = false }: Props) {
                 *
               </span>
             </label>
-            <Select.Root value={String(tipoIdx)} onValueChange={(v) => setTipoIdx(Number(v))}>
+            {/* [v2 2026-07-28] `''` y no `'-1'` cuando no hay tipo elegido:
+                Radix solo pinta el placeholder con value vacío o undefined —
+                con '-1' (una cadena que no casa con ninguna opción) dejaba el
+                campo EN BLANCO, sin el «Selecciona el tipo». Se veía poco
+                estando el form apilado en la columna; en el modal, con los
+                campos a 2 columnas, quedaba un hueco vacío al lado de
+                WhatsApp. Es un campo obligatorio: tiene que decir qué se
+                espera de él. */}
+            <Select.Root
+              value={tipoIdx >= 0 ? String(tipoIdx) : ''}
+              onValueChange={(v) => setTipoIdx(Number(v))}
+            >
               <Select.Trigger
                 id="evento-tipo"
                 className="h-10 w-full"
@@ -432,15 +420,20 @@ export function WidgetEvento({ evento, colapsable = false }: Props) {
           </div>
         </div>
 
-        <Textarea
-          id="evento-mensaje"
-          label="Cuéntanos más"
-          value={mensaje}
-          onChange={setMensaje}
-          placeholder="Detalles del evento, horario preferido, menú, etc."
-        />
+        {/* Los `sm:col-span-2` solo hacen algo en el modal (el contenedor es
+            grid); en la columna el contenedor es flex y son inertes. */}
+        <div className="sm:col-span-2">
+          <Textarea
+            id="evento-mensaje"
+            label="Cuéntanos más"
+            value={mensaje}
+            onChange={setMensaje}
+            placeholder="Detalles del evento, horario preferido, menú, etc."
+            filas={enModal ? 3 : 4}
+          />
+        </div>
 
-        <FancyButton.Root type="submit" variant="primary" className="w-full">
+        <FancyButton.Root type="submit" variant="primary" className="w-full sm:col-span-2">
           {evento.ctaPrincipal}
         </FancyButton.Root>
 
@@ -449,7 +442,7 @@ export function WidgetEvento({ evento, colapsable = false }: Props) {
             (mismo mensaje, contacto directo) — la web del cliente lo
             tenía como botón "demo" sin PDF real. */}
         {evento.ctaSecundaria ? (
-          <FancyButton.Root variant="basic" className="w-full" asChild>
+          <FancyButton.Root variant="basic" className="w-full sm:col-span-2" asChild>
             <a
               href={`${WHATSAPP_URL}?text=${encodeURIComponent(`Hola! Me interesa el dossier corporativo de Hispaniola Aquatic Adventures. Mi nombre es `)}`}
               target="_blank"
@@ -475,14 +468,100 @@ export function WidgetEvento({ evento, colapsable = false }: Props) {
           un ticker infinito pasando en horizontal, tiene que ser el
           mismo que esta en tours"). Reusa el mismo componente
           `components/ui/checks-ticker.tsx` — misma animación, misma
-          pausa al hover, misma respuesta a prefers-reduced-motion. */}
-      <ChecksTicker
-        lineas={[
-          'Respuesta en menos de 24 h',
-          'Sin compromiso — cotizamos gratis',
-          'WhatsApp directo con el equipo del barco',
-        ]}
-      />
-    </Caja>
+          pausa al hover, misma respuesta a prefers-reduced-motion.
+          [v2 2026-07-28] En el modal NO se pinta: sus dos primeros checks
+          («respuesta en menos de 24 h», «sin compromiso») ya los dice la
+          bajada del título, y un texto que se desliza solo al pie de un
+          formulario abierto compite con lo único que ahí importa, que es
+          rellenarlo. */}
+      {enModal ? null : (
+        <ChecksTicker
+          lineas={[
+            'Respuesta en menos de 24 h',
+            'Sin compromiso — cotizamos gratis',
+            'WhatsApp directo con el equipo del barco',
+          ]}
+        />
+      )}
+    </>
+  )
+
+  // ── SIN CALCULADORA (bodas, empresas): el formulario ES el widget ───────
+  if (!colapsable) {
+    return (
+      <Caja>
+        <h2 className="font-display text-lg font-semibold text-navy">{evento.ctaPrincipal}</h2>
+        {formulario(false)}
+      </Caja>
+    )
+  }
+
+  // ── CON CALCULADORA (party boat): teaser en la columna + modal ──────────
+  // El teaser cabe en 3 líneas a propósito (Samuel, 2026-07-28: «que entre
+  // sin que haya que hacer scroll»): junto a la calculadora recortada, la
+  // columna entera cabe en una ventana de portátil, así que el visitante ve
+  // los DOS caminos —comprar y cotizar— sin mover la página.
+  return (
+    <>
+      <Caja>
+        <p className="font-display text-base font-semibold text-navy">
+          ¿Tu evento no encaja en un paquete?
+        </p>
+        <p className="-mt-2 text-sm text-navy-sub">
+          Bodas, grupos grandes o menú a medida — te cotizamos gratis en 24 h.
+        </p>
+        {/* `basic` (neutro) a propósito: el coral de esta columna es del CTA
+            de reserva, y dos botones coral seguidos serían dos «acción
+            principal». */}
+        <FancyButton.Root
+          type="button"
+          variant="basic"
+          className="w-full"
+          onClick={() => setAbierto(true)}
+          aria-haspopup="dialog"
+        >
+          {evento.ctaPrincipal}
+        </FancyButton.Root>
+      </Caja>
+
+      {/* EL FORMULARIO ABRE EN MODAL y no desplegado en la columna (Samuel,
+          2026-07-28: «al darle el botón que el formulario aparezca como modal,
+          no puesto ahí para que también haya que hacer scroll»). Tiene razón y
+          el argumento va más allá del scroll: un formulario de 7 campos metido
+          en una columna de 374px se sale de la ventana por abajo sí o sí, así
+          que rellenarlo obligaba a scrollear dentro de un widget sticky —el
+          peor sitio para escribir— mientras el resto de la página distraía por
+          detrás. En modal, el formulario tiene el doble de ancho (2 columnas
+          de campos), entra entero en pantalla, atrapa el foco y se cierra con
+          Escape.
+          Mismo Modal de AlignUI que la ficha técnica de la flota y el visor de
+          videos: scroll-lock, focus-trap y overlay con blur ya resueltos. */}
+      {abierto ? (
+        <Modal.Root open onOpenChange={(v) => setAbierto(v)}>
+          <Modal.Content
+            overlayClassName="bg-navy/55 p-4 backdrop-blur-md"
+            // max-h + flex-col: si la ventana es baja (o el móvil es
+            // pequeño), scrollea SOLO el cuerpo y la cabecera se queda.
+            className="flex max-h-[88dvh] w-full max-w-xl flex-col overflow-hidden rounded-card-grande"
+            aria-describedby={undefined}
+          >
+            {/* `pr-10` deja sitio al botón de cerrar del vendor, que va
+                absoluto en la esquina. */}
+            <div className="shrink-0 border-b border-linea px-5 pb-4 pt-5">
+              <Modal.Title className="pr-10 font-display text-h3 font-semibold text-navy">
+                {evento.ctaPrincipal}
+              </Modal.Title>
+              <p className="mt-1 text-sm text-navy-sub">
+                Cuéntanos qué tienes en mente y te respondemos en menos de 24 h — sin compromiso.
+              </p>
+            </div>
+
+            <div className="scroll-sutil flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-5">
+              {formulario(true)}
+            </div>
+          </Modal.Content>
+        </Modal.Root>
+      ) : null}
+    </>
   )
 }

@@ -93,7 +93,14 @@ export type MenuBuffetTour = {
  *  — es transversal a los 4 botes (Maite, GrandMa, Santa Maria, Forever
  *  Teresa). Charter es el único caso actual. */
 export type MenuCharterTour = {
-  platos: { nombre: string; desc?: string }[]
+  /** [v2 2026-07-28] `foto` y `brocheta` son nuevos: la carta del charter dejó
+   *  de ser una lista con checks y pasa a ser una rejilla de fotos reales
+   *  (tour/carta-charter.tsx). Las 4 fotos son las MISMAS que ya usa el menú
+   *  del semi-privado —mismo operador, misma cocina flotante, mismos platos con
+   *  la misma descripción—, así que no se está ilustrando un plato con la foto
+   *  de otro. Las 3 brochetas no tienen foto en la web del cliente: se agrupan
+   *  en una celda propia en vez de fingir una imagen que no existe. */
+  platos: { nombre: string; desc?: string; foto?: string; brocheta?: boolean }[]
   addOn?: { nombre: string; precio: number; descripcion?: string }
   /** [v2 2026-07-28, plan 01 §7 — slide 2] Cómo se cocina a bordo, portado de
    *  la ficha real del charter («falta eso en charter privado»). Es la única
@@ -564,10 +571,16 @@ export const FICHAS: Record<string, FichaTour> = {
       },
       {
         id: 'forever-teresa',
-        nombre: 'Forever Teresa',
-        descripcion: 'Catamarán grande 3h/4h · hasta 120 pax',
+        // [v2 2026-07-28] «Forever Teresa» → «Forever Teresa · 3h», y la
+        // duración pierde el «(también 4h, consultar)». Las dos cosas son
+        // resto de cuando este barco tenía una sola entrada: desde que existe
+        // la fila de 4h justo debajo, un rótulo pelado y un «consultar» que
+        // remite a la opción de al lado solo confunden — parecían dos barcos
+        // distintos, uno de ellos con asterisco.
+        nombre: 'Forever Teresa · 3h',
+        descripcion: 'Catamarán grande 3h · hasta 120 pax',
         capacidad: '1-120 personas (precios por tramo)',
-        duracion: '3 horas (también 4h, consultar)',
+        duracion: '3 horas',
         foto: 'flota-forever-teresa',
         horarios: [
           { hora: '9:00 AM', regreso: '12:00 PM' },
@@ -617,19 +630,43 @@ export const FICHAS: Record<string, FichaTour> = {
     // add-on (lobster premium). Se pinta en MenuTour como un caso
     // nuevo (menuCharter) porque es transversal a las sub-variantes.
     menuCharter: {
+      // [v2 2026-07-28] Dos cambios sobre lo que había:
+      //  · Los nombres pasan al ESPAÑOL. Estaban en inglés («Seafood», «Meat»,
+      //    «Chicken Skewers») porque se portaron crudos del JSON-LD del
+      //    cliente, pero son los MISMOS platos que el menú del semi-privado ya
+      //    publica traducidos («Mariscos», «Carne», «Vegetariano») y con la
+      //    misma descripción. No es una traducción nueva: es usar la que el
+      //    repo ya tenía, en un sitio donde se había colado el original.
+      //  · Se les ata su FOTO real (las 4 que existen). Misma cocina y mismo
+      //    plato que en el semi-privado, así que la foto es del plato que
+      //    dice ser — no es una foto de relleno.
       platos: [
-        { nombre: 'Seafood', desc: 'Langosta, pulpo, camarón' },
-        { nombre: 'Meat', desc: 'Angus certificado' },
-        { nombre: 'Surf & Turf', desc: 'Langosta + Angus' },
-        { nombre: 'Vegetarian', desc: 'Ceviche de zucchini' },
-        { nombre: 'Chicken Skewers' },
-        { nombre: 'Beef Skewers' },
-        { nombre: 'Shrimp Skewers' },
+        { nombre: 'Surf & Turf', desc: 'Langosta + Angus certificado', foto: 'plato-surf-turf' },
+        { nombre: 'Mariscos', desc: 'Langosta, pulpo, camarón', foto: 'plato-mariscos' },
+        { nombre: 'Carne', desc: 'Angus certificado', foto: 'plato-carne' },
+        { nombre: 'Vegetariano', desc: 'Ceviche de zucchini', foto: 'plato-vegetariano' },
+        // ⚠️ [placeholder-v2] La foto de la celda de brochetas. Samuel la pidió
+        // el 07-28 («dale una foto de menú provisional, usa una de stock de
+        // parrilla»), pero NO es de stock: es `plato-chicken-bodegon`, el
+        // bodegón real de la pechuga a la parrilla que la web del cliente ya
+        // publica en el menú del semi-privado. Real, misma cocina, mismo
+        // encuadre y misma calidad que los otros cuatro platos de la carta —
+        // una foto de banco habría cantado al lado de estos bodegones sobre
+        // blanco, y este proyecto no ilustra con stock.
+        // Sigue siendo PROVISIONAL en un sentido: es pollo a la parrilla, no
+        // una brocheta. Se sustituye en cuanto el cliente haga el shooting de
+        // platos que ya tiene previsto (slide 4).
+        { nombre: 'Brocheta de pollo', brocheta: true, foto: 'plato-chicken-bodegon' },
+        { nombre: 'Brocheta de res', brocheta: true },
+        { nombre: 'Brocheta de camarón', brocheta: true },
       ],
       addOn: {
         nombre: 'Lobster premium',
         precio: 30,
-        descripcion: 'Disponible al hacer check-out, US$ 30 por persona',
+        // [v2 2026-07-28] Se le quita el «US$ 30 por persona» del final: en la
+        // carta nueva el precio se pinta al lado, en grande, y la frase lo
+        // repetía a 20 px de distancia.
+        descripcion: 'Se añade al hacer el check-out, para quien la quiera',
       },
       // [v2 2026-07-28, plan 01 §7 — slide 2] Los tres hechos de cocina de la
       // ficha original del charter. Se traducen a tuteo (la web original usa

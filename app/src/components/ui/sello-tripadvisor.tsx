@@ -43,7 +43,30 @@ import { useId } from 'react'
 // lo que hace que la luz caiga siempre sobre el pico que toca. Si se hubieran
 // duplicado las coordenadas, cualquier retoque futuro tendría que hacerse en
 // dos sitios y la máscara se desalinearía en cuanto alguien olvidara uno.
-export function SelloTripAdvisor({ className = '' }: { className?: string }) {
+export function SelloTripAdvisor({
+  className = '',
+  sinTexto = false,
+}: {
+  className?: string
+  /**
+   * [v2 2026-07-28, pedido de Samuel para la foto de bienvenida de /flota:
+   * «deja solo el badge con su animación infinita, quita el background que
+   * tiene y el texto»] Pinta ÚNICAMENTE el sello: sin las dos líneas de copy
+   * y, por tanto, sin necesidad de una superficie detrás.
+   *
+   * Es una variante de USO, no una pieza distinta: encima de una foto con
+   * profundidad, el sello ya se lee solo —es un objeto de metal, no un icono
+   * plano— y el texto obligaba a meterle un panel debajo para tener contraste,
+   * que es justo lo que se veía pegado. Donde el sello vive sobre una
+   * superficie plana (ficha de tour, landings de evento) el texto SÍ hace
+   * falta: ahí el reclamo «#1 durante 7 años» es el argumento, y por eso el
+   * default sigue siendo con texto.
+   *
+   * La corona de picos girando (la «animación infinita») no depende de esto:
+   * vive en el SVG y sigue igual.
+   */
+  sinTexto?: boolean
+}) {
   // Los `id` de SVG son GLOBALES del documento, no del componente: dos sellos
   // en la misma página compartirían máscara y degradado, y el segundo pintaría
   // con las formas del primero. `useId` les da un sufijo único por instancia.
@@ -116,16 +139,24 @@ export function SelloTripAdvisor({ className = '' }: { className?: string }) {
         </g>
       </svg>
 
-      <span className="leading-tight">
-        {/* Este texto ES el texto accesible del sello: el SVG va aria-hidden
-            para que un lector de pantalla no anuncie dos veces lo mismo. */}
-        <span className="block text-sm font-bold tracking-[0.06em] text-white/85 transition-colors duration-300 group-hover:text-white">
-          #1 en TripAdvisor
+      {/* Este texto ES el texto accesible del sello: el SVG va aria-hidden
+          para que un lector de pantalla no anuncie dos veces lo mismo.
+          ⚠️ Por eso, en `sinTexto`, el reclamo NO desaparece del documento —
+          baja a `sr-only`. Sin él, el sello quedaría como una imagen muda:
+          quien navega con lector de pantalla vería un adorno donde el resto ve
+          el premio. */}
+      {sinTexto ? (
+        <span className="sr-only">#1 en TripAdvisor, 7 años seguidos</span>
+      ) : (
+        <span className="leading-tight">
+          <span className="block text-sm font-bold tracking-[0.06em] text-white/85 transition-colors duration-300 group-hover:text-white">
+            #1 en TripAdvisor
+          </span>
+          <span className="block text-xs tracking-[0.06em] text-white/55 transition-colors duration-300 group-hover:text-white/80">
+            7 años seguidos
+          </span>
         </span>
-        <span className="block text-xs tracking-[0.06em] text-white/55 transition-colors duration-300 group-hover:text-white/80">
-          7 años seguidos
-        </span>
-      </span>
+      )}
     </div>
   )
 }

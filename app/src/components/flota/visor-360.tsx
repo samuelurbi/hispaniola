@@ -13,11 +13,18 @@ import * as Modal from '@/components/alignui/modal'
 // botón que promete un recorrido y abre una foto normal es exactamente el
 // patrón que este proyecto evita.
 //
-// Samuel pidió el botón para poder maquetar la card completa. La forma de
-// tenerlo SIN romper aquel criterio es que el visor lo diga él mismo, en
-// pantalla y sobre el propio reproductor: no una nota al pie que nadie lee,
-// una etiqueta encima. Quien lo abre no puede confundirlo con el recorrido
-// real ni por un segundo.
+// Samuel pidió el botón para poder maquetar la card completa. Hasta el
+// 2026-07-28 el visor lo advertía EN PANTALLA, con una etiqueta encima del
+// reproductor («Recorrido de ejemplo — el vídeo 360º real está en
+// producción»). ESA ETIQUETA SE RETIRA por pedido suyo: «quita cualquier
+// aviso de contenido de ejemplo, se ve cutre, se sobreentiende» — mismo
+// criterio que en /instalaciones y /tripulacion. La maqueta enseña la página,
+// no sus andamios.
+//
+// ⚠️ El criterio de PRODUCCIÓN no cambia con esto, y es lo que hay que
+// respetar cuando esta página se monte de verdad: sin `tour360` real, el botón
+// NO SE PINTA (ausencia silenciosa). Lo que se ha quitado es el cartel de la
+// maqueta, no la regla.
 //
 // Cuando lleguen los archivos hay dos caminos, y la reunión del 07-24 (29:48,
 // «de cada uno, pero en un vídeo 360») apunta al primero:
@@ -98,17 +105,10 @@ export function Visor360({
               loop
               playsInline
               preload="metadata"
-              aria-label={`Recorrido de ejemplo del ${nombre}`}
+              aria-label={`Recorrido en 360º del ${nombre}`}
               onClick={(e) => e.stopPropagation()}
               className="max-h-full w-full rounded-card object-cover"
             />
-            {/* EL AVISO. Va SOBRE el reproductor y no debajo porque su trabajo
-                es impedir la confusión, no documentarla. `pointer-events-none`
-                para que no robe clics a los controles del vídeo. */}
-            <p className="pointer-events-none absolute left-4 top-4 max-w-xs rounded-btn bg-navy/80 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
-              Recorrido de ejemplo — el vídeo 360º real de cada embarcación está
-              en producción.
-            </p>
           </div>
         </div>
       </Modal.Content>
