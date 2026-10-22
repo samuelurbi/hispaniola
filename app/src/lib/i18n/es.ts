@@ -2767,4 +2767,14 @@ export const ES: Record<string, string> = {
   "Celebrate on board": "Celebra a bordo",
   "Party boats, weddings and corporate charters: the whole catamaran for your group, on the Caribbean.": "Party boats, bodas y chárters de empresa: el catamarán entero para tu grupo, en el Caribe.",
   "Private events & party boats": "Eventos privados y party boats",
+
+  // [2026-10-22, Samuel tras hablar con Raymond] Las 4 webs de party boat del
+  // grupo en el megamenú de Eventos y en la hoja móvil (WEBS_GRUPO en
+  // data/home.ts). Los nombres de los barcos son marca y no se traducen.
+  "Our party boats": "Nuestros party boats",
+  "(opens in a new tab)": "(se abre en una pestaña nueva)",
+  "Private party boat. Your price per person in seconds.": "Party boat privado. Tu precio por persona en segundos.",
+  "Private catamaran charters for your group.": "Catamaranes privados para tu grupo.",
+  "The whole boat is yours: food on board, your playlist.": "El barco entero para tu grupo: comida a bordo y tu música.",
+  "Adults-only Thursday sail with open bar and live DJ.": "Salida de los jueves solo para adultos, con barra libre y DJ en vivo.",
 }
