@@ -15,6 +15,6 @@ Para producción: NO usar esta rama; usar `staging`/`master`.
 
 - Repo: https://github.com/samuelurbi/hispaniola (remoto `origin`), rama `revision-eventos`. Nunca el remoto `derick`.
 - Proyecto de Vercel: `hispaniola-eventos-preview` (equipo samuelurbi's projects), Root Directory `app`, conectado al repo: push a `revision-eventos` = deploy (como rama de vista previa; la rama de producción del proyecto sigue siendo `master`, que no se toca).
-- URL estable de la rama: https://hispaniola-eventos-preview-git-revision-eventos-samuelurbis-projects.vercel.app
+- URL pública: https://hispaniola-eventos-preview.vercel.app (alias de la rama, que sigue a `revision-eventos`: https://hispaniola-eventos-preview-git-revi-bef661-samuelurbis-projects.vercel.app).
 - La protección de Vercel (login) está DESACTIVADA para poder compartir el enlace; la copia lleva noindex y no tiene backend.
   Para volver a protegerla: Vercel → Settings → Deployment Protection.
